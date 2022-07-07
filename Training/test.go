@@ -123,7 +123,9 @@ func generateAccounts() func() Account {
 }
 
 func Test() {
-	july6()
+	arr := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+	fmt.Println(getEvens(arr))
+	//july6()
 }
 
 func july5() {
@@ -207,6 +209,9 @@ func july6() {
 	lowerTriangle(inputs)
 	fmt.Println(exchangeR(inputs))
 	fmt.Println(exchangeC(inputs))
+
+	interfaceSlice()
+
 }
 
 //this function generates each row of the matrix
@@ -315,4 +320,25 @@ func exchangeR(in [][]int) [][]int {
 	}
 	out = append(out, in[0])
 	return out
+}
+
+func interfaceSlice() {
+	i := []interface{}{1, 2, 3}
+	j := []interface{}{"A", "B", "C"}
+	k := append(i, j...)
+	fmt.Println(k)
+}
+
+func getEvens(in []int) []int {
+	var out []int
+	for _, jj := range in {
+		if jj%2 == 0 {
+			out = append(out, jj)
+		}
+	}
+	return out
+}
+
+func july7() {
+
 }
