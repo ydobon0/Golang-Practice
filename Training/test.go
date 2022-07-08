@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+//*---------------------- JULY 5 -----------------------------------------------------------------------------------------------------------------------------------------
+
 type Account struct {
 	balance         float64
 	minBal          float64
@@ -122,12 +124,6 @@ func generateAccounts() func() Account {
 	}
 }
 
-func Test() {
-	arr := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-	fmt.Println(getEvens(arr))
-	//july6()
-}
-
 func july5() {
 	var accs []Account
 
@@ -166,31 +162,15 @@ func july5() {
 	fmt.Println(accs)
 }
 
+//*---------------------- JULY 6 -----------------------------------------------------------------------------------------------------------------------------------------
+
 /*
-1) 3 X 3 Matrix of slice type ,create a function which return a slice from function
-2)Take a 3 X 3 slice and print its left triangle
+todo 1) 3 X 3 Matrix of slice type ,create a function which return a slice from function
 Rest complete the Activities from LMS
-3)input
-1 2 3
-4 5 6
-7 8 9
-output(interchange the first and last coloumn)
-3 2 1
-6 5 4
-9 8 7
--------------------------------
-input
-1 2 3
-4 5 6
-7 8 9
-output(interchange the first and last row )
-7 8 9
-4 5 6
-1 2 3
 */
 
 func july6() {
-	//create 3 X 3 Matrix , take input from user
+	//todo create 3 X 3 Matrix , take input from user
 	//can generate any M X N Matrix including 3 X 3
 	var inputs [][]int
 	numR := 0
@@ -226,6 +206,7 @@ func generateRow(length int) []int {
 	return s
 }
 
+//todo 2)Take a 3 X 3 slice and print its left triangle
 func lowerTriangle(in [][]int) {
 	l1 := len(in)
 	l2 := len(in[0])
@@ -243,6 +224,7 @@ func lowerTriangle(in [][]int) {
 	}
 }
 
+//todo LMS slice activity
 func analyzeWords() {
 	var arr [10]string
 	arrLen := len(arr)
@@ -279,23 +261,14 @@ func analyzeWords() {
 }
 
 /*
-3)input
-1 2 3
-4 5 6
-7 8 9
-output(interchange the first and last coloumn)
-3 2 1
-6 5 4
-9 8 7
--------------------------------
-input
-1 2 3
-4 5 6
-7 8 9
-output(interchange the first and last row )
-7 8 9
-4 5 6
-1 2 3
+todo	3)input
+todo	1 2 3
+todo	4 5 6
+todo	7 8 9
+todo	output(interchange the first and last coloumn)
+todo	3 2 1
+todo	6 5 4
+todo	9 8 7
 */
 
 func exchangeC(in [][]int) [][]int {
@@ -311,6 +284,17 @@ func exchangeC(in [][]int) [][]int {
 
 	return out
 }
+
+/*
+todo	input
+todo	1 2 3
+todo	4 5 6
+todo	7 8 9
+todo	output(interchange the first and last row )
+todo	7 8 9
+todo	4 5 6
+todo	1 2 3
+*/
 
 func exchangeR(in [][]int) [][]int {
 	var out [][]int
@@ -329,6 +313,7 @@ func interfaceSlice() {
 	fmt.Println(k)
 }
 
+//todo take in a slice of integers and return a slice that contains only the even numbers
 func getEvens(in []int) []int {
 	var out []int
 	for _, jj := range in {
@@ -339,6 +324,188 @@ func getEvens(in []int) []int {
 	return out
 }
 
-func july7() {
+//*---------------------- JULY 7 -----------------------------------------------------------------------------------------------------------------------------------------
 
+func july7() {
+	// var greetings = make(map[string]string)
+	// greetings["Abe"] = "Hi"
+	// greetings["Bob"] = "Hey"
+	// greetings["Clyde"] = "Hello"
+	// greetings["Dan"] = "Sup"
+	// greetings["Frank"] = "Good Day"
+	// fmt.Println(greetings)
+
+	// keys := make([]string, 0, len(greetings))
+	// for i := range greetings {
+	// 	keys = append(keys, i)
+	// }
+	// sort.Sort(sort.Reverse(sort.StringSlice(keys)))
+	// fmt.Println(keys)
+
+	//todo 1)Create a map where values must be a structure type
+	var accs = make(map[int]Account)
+	numAccs := 0
+	fmt.Println("Please enter number of accounts")
+	fmt.Scanln(&numAccs)
+
+	f := generateAccounts() //uses account structure from 7/5/2022
+
+	for ii := 0; ii < numAccs; ii++ {
+		a := f()
+		accs[a.id] = a
+	}
+
+	fmt.Println(accs)
+}
+
+/*
+golang is very good for APIs
+maps and structures are very important
+
+methods are faster than functions
+methods are functions that use structs
+
+interface - a collection of function but with only the function signature
+only prototype of function is there.
+if you declare a function from an interface, it becomes a method
+*/
+
+//todo do basic map activities on LMS
+
+//todo Maps Activity: Keyword Search
+func keywordSearch() {
+	var mm = make(map[string]string)
+	key := ""
+
+	mm["apple"] = "fruit"
+	mm["bananna"] = "fruit"
+	mm["strawberry"] = "fruit"
+	mm["watermelon"] = "fruit"
+	mm["orange"] = "fruit"
+	mm["onion"] = "vegetable"
+	mm["celery"] = "vegetable"
+	mm["peanut"] = "nut"
+	mm["pistachio"] = "nut"
+	mm["almond"] = "nut"
+
+	done := ""
+	found := false
+	for true {
+		found = false
+		fmt.Println("Please enter a search term:")
+		fmt.Scanln(&key)
+
+		for i := range mm {
+			if i == key || mm[i] == key {
+				fmt.Println(i, " : ", mm[i])
+				found = true
+			}
+		}
+
+		if !found {
+			fmt.Println("The term you entered does not appear in the map. Sorry!")
+		}
+
+		fmt.Println("Do you wish to stop? Type y to stop. Type anything else to continue")
+		fmt.Scanln(&done)
+
+		if done == "y" {
+			break
+		}
+	}
+	fmt.Println("All done!")
+}
+
+//todo	3) Create a map ex map[string]int{"orange": 5, "apple": 7,	"mango": 3, "strawberry": 9} ,sort the map based on key length in asecending order
+func sortMap() {
+	var mm = make(map[string]int)
+
+	mm["orange"] = 5
+	mm["apple"] = 7
+	mm["mango"] = 3
+	mm["strawberry"] = 9
+
+	var keys []string
+	for ii := range mm {
+
+		keys = append(keys, ii)
+	}
+	fmt.Println(keys)
+
+	sort.SliceStable(keys, func(ii, jj int) bool {
+		return len(keys[ii]) < len(keys[jj])
+	})
+
+	for _, ii := range keys {
+		fmt.Println(ii, "	:	", mm[ii])
+	}
+
+}
+
+//todo	2) Take 20 (any count) from console between 1 -100 ) then print the summary like no between 1- 10 Count-5     11 -20 count -7    21-30 count -10  etc
+func rangeSummary() {
+	num := 0
+	fmt.Println("How many numbers do you want to enter?")
+	fmt.Scanln(&num)
+
+	var mm = make(map[int]int)
+
+	mm[0] = 0
+	mm[1] = 0
+	mm[2] = 0
+	mm[3] = 0
+	mm[4] = 0
+	mm[5] = 0
+	mm[6] = 0
+	mm[7] = 0
+	mm[8] = 0
+	mm[9] = 0
+
+	input := 0
+
+	for ii := 0; ii < num; ii++ {
+		fmt.Println("Enter an integer:")
+		fmt.Scanln(&input)
+		if input <= 10 {
+			mm[0] += 1
+		} else if input <= 20 {
+			mm[1] += 1
+		} else if input <= 30 {
+			mm[2] += 1
+		} else if input <= 40 {
+			mm[3] += 1
+		} else if input <= 50 {
+			mm[4] += 1
+		} else if input <= 60 {
+			mm[5] += 1
+		} else if input <= 70 {
+			mm[6] += 1
+		} else if input <= 80 {
+			mm[7] += 1
+		} else if input <= 90 {
+			mm[8] += 1
+		} else {
+			mm[9] += 1
+		}
+	}
+
+	for ii := 0; ii < 10; ii++ {
+		switch ii {
+		case 0:
+			fmt.Println(mm[ii], "numbers less than or equal to 10")
+		case 9:
+			fmt.Println(mm[ii], "numbers greater than 90")
+		default:
+			fmt.Println(mm[ii], "numbers between", (ii*10)+1, "and", (ii*10)+10)
+		}
+	}
+}
+
+func Test() { //!--------------------------- TESTING FUNCTION ---------------------------------------
+	// arr := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+	// fmt.Println(getEvens(arr))
+	//july7()
+	//keywordSearch()
+	// sortMap()
+	rangeSummary()
 }
