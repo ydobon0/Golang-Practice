@@ -20,11 +20,11 @@ type goblin struct {
 	def int
 }
 
-func generateHero(startingG int) hero {
+func generateHero(startingG int) hero { //generates a hero
 	player := hero{}
 	player.hp = rand.Intn(11) + 20
-	player.atk = rand.Intn(2) + 1
-	player.def = rand.Intn(4) + 1
+	player.atk = rand.Intn(3) + 1
+	player.def = rand.Intn(5) + 1
 	player.potions = [5]int{2, 2, 2, 2, 2}
 	player.gold = startingG
 	player.maxHP = player.hp
@@ -32,7 +32,7 @@ func generateHero(startingG int) hero {
 	return player
 }
 
-func generateGoblin() goblin {
+func generateGoblin() goblin { //generates a goblin encounter
 	gob := goblin{}
 	gob.hp = rand.Intn(6) + 5
 	gob.atk = rand.Intn(2) + 2
@@ -42,7 +42,6 @@ func generateGoblin() goblin {
 }
 
 func GoblinTower() {
-	fmt.Println("hello")
 	startingG := 0
 	for true {
 		player := generateHero(startingG)
@@ -52,12 +51,12 @@ func GoblinTower() {
 		chance := 50
 		roll := 0
 		input := ""
-		for player.hp > 0 {
+		for player.hp > 0 { //the game
 			steps += 1
 			roll = rand.Intn(100)
-			if roll <= chance {
+			if roll <= chance { //rolls chance of encountering a goblin. If the roll is lower than the chance, you encounter a goblin
 				gob := generateGoblin()
-				for gob.hp > 0 && player.hp > 0 {
+				for gob.hp > 0 && player.hp > 0 { //goblin encounter
 					fmt.Println("Your HP = ", player.hp)
 					fmt.Println("Goblin HP = ", gob.hp)
 
@@ -84,6 +83,7 @@ func GoblinTower() {
 						gob.hp -= damage
 						fmt.Println(damage, " damage!")
 					} else if action == 2 {
+						found := false
 						for ii := 0; ii < 5; ii++ {
 							if player.potions[ii] > 0 {
 								fmt.Println("You drink a potion! Recovered HP!")
@@ -93,8 +93,18 @@ func GoblinTower() {
 								if player.hp > player.maxHP {
 									player.hp = player.maxHP
 								}
+								found = true
 								break
 							}
+						}
+						if !found {
+							fmt.Print("You have no potions, so you attack instead!")
+							damage := player.atk - gob.def
+							if damage <= 0 {
+								damage = 1
+							}
+							gob.hp -= damage
+							fmt.Println(damage, " damage!")
 						}
 
 					}
@@ -112,11 +122,17 @@ func GoblinTower() {
 					player.hp -= damage
 					fmt.Println(damage, " damage!")
 					if player.hp <= 0 {
+						fmt.Println("You died!")
 						break
 					}
 				}
 			}
+			if player.hp <= 0 {
+				break
+			}
+			fmt.Println()
 			fmt.Println("You have cleared ", steps, " steps")
+			fmt.Println()
 			if steps%10 == 0 {
 				lvl += 1
 				chance += 5
@@ -152,7 +168,7 @@ func GoblinTower() {
 				}
 			}
 		}
-		fmt.Println("You died!")
+
 		input = ""
 		fmt.Println("Do you want to keep playing? Enter z to stop, anything else to keep playing")
 		fmt.Scanln(&input)
