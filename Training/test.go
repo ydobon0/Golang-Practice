@@ -2,10 +2,438 @@ package Training
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 	"strings"
 	"time"
 )
+
+//todo Module 6 Activites: Data Collections -----------------------------------------------------------------------------------------------------------------------------------------
+
+func Test() { //!--------------------------- TESTING FUNCTION ---------------------------------------
+	// arr := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+	// fmt.Println(getEvens(arr))
+	//july7()
+	//keywordSearch()
+	// sortMap()
+	july8()
+}
+
+func july8() {
+	//act2()
+	//act3()
+	act4()
+	// act5()
+	// act6()
+}
+
+//todo Activity 1
+func generateArray(n int) []int { //should not be able to generate 100 and -100
+	var out []int
+	for ii := 0; ii < n; ii++ {
+		out = append(out, rand.Intn(198)-99)
+	}
+	return out
+}
+
+//todo Activity 2 -----------------------------------------------------------------------------------------------------------------------------------------
+func act2() {
+	s := generateArray(100)
+	//fmt.Println(s)
+	var a [100]int
+	copy(a[:], s)
+	fmt.Println(a)
+	//fmt.Printf("%T", a)
+	// fmt.Println(maxArr(a))
+	// fmt.Println(maxInd(a))
+	// fmt.Println(minArr(a))
+	// fmt.Println(minInd(a))
+	// fmt.Println(sortD(a))
+	// fmt.Println(sortA(a))
+	// fmt.Println(meanArr(a))
+	// fmt.Println(medianArr(a))
+	// fmt.Println(findPos(a))
+	// fmt.Println(findNeg(a))
+	fmt.Println(longestSorted(a))
+	// fmt.Println((removeDupes(a)))
+}
+
+func maxArr(in [100]int) int {
+	out := in[0]
+
+	for _, ii := range in {
+		if ii > out {
+			out = ii
+		}
+	}
+	return out
+}
+
+func maxInd(in [100]int) int {
+	max := in[0]
+	out := 0
+
+	for ii, jj := range in {
+		if jj > max {
+			max = jj
+			out = ii
+		}
+	}
+	return out
+}
+
+func minArr(in [100]int) int {
+	out := in[0]
+
+	for _, ii := range in {
+		if ii < out {
+			out = ii
+		}
+	}
+	return out
+}
+
+func minInd(in [100]int) int {
+	min := in[0]
+	out := 0
+
+	for ii, jj := range in {
+		if jj < min {
+			min = jj
+			out = ii
+		}
+	}
+	return out
+}
+
+func sortD(in [100]int) [100]int {
+	var out [100]int
+	copy(out[:], splitArr(in[:], false))
+	return out
+}
+
+func sortA(in [100]int) [100]int {
+	var out [100]int
+	copy(out[:], splitArr(in[:], true))
+	return out
+}
+
+func splitArr(in []int, asc bool) []int {
+	if len(in) < 2 {
+		return in
+	}
+	mid := len(in) / 2
+	var LL, RR []int
+	LL = splitArr(in[:mid], asc)
+	RR = splitArr(in[mid:], asc)
+	out := mergeSort(LL, RR, asc)
+	return out
+}
+
+func mergeSort(in1 []int, in2 []int, asc bool) []int {
+	var out []int
+	xx := 0
+	yy := 0
+	if asc {
+		for xx < len(in1) || yy < len(in2) {
+			if xx >= len(in1) {
+				out = append(out, in2[yy])
+				yy++
+			} else if yy >= len(in2) {
+				out = append(out, in1[xx])
+				xx++
+			} else {
+				if in1[xx] < in2[yy] {
+					out = append(out, in1[xx])
+					xx++
+				} else {
+					out = append(out, in2[yy])
+					yy++
+				}
+			}
+		}
+	} else {
+		for xx < len(in1) || yy < len(in2) {
+			if xx >= len(in1) {
+				out = append(out, in2[yy])
+				yy++
+			} else if yy >= len(in2) {
+				out = append(out, in1[xx])
+				xx++
+			} else {
+				if in1[xx] > in2[yy] {
+					out = append(out, in1[xx])
+					xx++
+				} else {
+					out = append(out, in2[yy])
+					yy++
+				}
+			}
+		}
+	}
+	return out
+}
+
+func meanArr(in [100]int) int {
+	mean := 0
+	for _, ii := range in {
+		mean += ii
+	}
+	mean /= len(in)
+	return mean
+}
+
+func medianArr(in [100]int) int {
+	sorted := sortA(in)
+	mid := len(in) / 2
+	return sorted[mid]
+}
+
+func findPos(in [100]int) []int {
+	var out []int
+	for _, ii := range in {
+		if ii > 0 {
+			out = append(out, ii)
+		}
+	}
+	return out
+}
+
+func findNeg(in [100]int) []int {
+	var out []int
+	for _, ii := range in {
+		if ii < 0 {
+			out = append(out, ii)
+		}
+	}
+	return out
+}
+
+func longestSorted(in [100]int) []int {
+	asc := 0 //-1 = decreasing; 1 = increasing; 0 = same
+	prev := in[0]
+	start := 0
+	length := 0
+	bestLen := 0
+
+	for ii, jj := range in {
+		if ii != 0 {
+			if asc == -1 {
+				length += 1
+				if jj > prev {
+					if length > bestLen {
+						bestLen = length
+						start = ii - 1
+					}
+					length = 1
+					asc = 1
+				}
+				prev = jj
+			} else if asc == 1 {
+				length += 1
+				if jj < prev {
+					if length > bestLen {
+						bestLen = length
+						start = ii - 1
+					}
+					length = 1
+					asc = -1
+				}
+				prev = jj
+			} else {
+				length += 1
+				if jj > prev {
+					asc = 1
+				} else if jj < prev {
+					asc = -1
+				}
+				prev = jj
+			}
+		}
+	}
+	out := in[start : start+bestLen]
+	return out
+}
+
+func removeDupes(in [100]int) []int {
+	var mm = make(map[int]int)
+	var out []int
+	new := false
+	for _, ii := range in {
+		_, new = mm[ii]
+
+		if !new {
+			out = append(out, ii)
+			mm[ii] = 1
+		}
+	}
+	return out
+}
+
+//todo Activity 3 -----------------------------------------------------------------------------------------------------------------------------------------
+func act3() {
+	var nums []int
+	num := 0
+	done := ""
+	for ii := 0; ii < 10; ii++ {
+		fmt.Println("Enter an integer:")
+		fmt.Scanln(&num)
+		nums = append(nums, num)
+
+		if ii >= 4 && ii < 9 {
+			fmt.Println("Are you done entering numbers? type y to stop")
+			fmt.Scanln(&done)
+			if done == "y" {
+				break
+			}
+		}
+	}
+
+	sum := 0
+	prod := 1
+
+	fmt.Print("You entered these numbers:")
+	for _, ii := range nums {
+		sum += ii
+		prod *= ii
+		fmt.Print(" ", ii)
+	}
+	fmt.Printf("\n")
+	fmt.Println("The sum of these numbers is", sum)
+	fmt.Println("The product of these numbers is", prod)
+}
+
+//todo Activity 4 -----------------------------------------------------------------------------------------------------------------------------------------
+func act4() {
+	paragraph := "Hi, I like really like cheese and crackers... They like taste good"
+	fmt.Println(paragraph)
+	paragraph = strings.ToLower(paragraph)
+	paragraph = strings.ReplaceAll(paragraph, ".", "")
+	paragraph = strings.ReplaceAll(paragraph, ",", "")
+	paragraph = strings.ReplaceAll(paragraph, "?", "")
+	paragraph = strings.ReplaceAll(paragraph, "!", "")
+	paragraph = strings.ReplaceAll(paragraph, ":", "")
+	paragraph = strings.ReplaceAll(paragraph, ";", "")
+	words := strings.Split(paragraph, " ")
+	fmt.Println(words)
+
+	var mm = make(map[string]int)
+	numDistinct := 0
+
+	for _, ii := range words {
+		_, found := mm[ii]
+		if found {
+			mm[ii] += 1
+		} else {
+			mm[ii] = 1
+			numDistinct += 1
+		}
+	}
+
+	fmt.Println("There were ", numDistinct, "distinct words")
+	fmt.Println("Here are the number of times each word appeared")
+	for ii := range mm {
+		fmt.Println(ii, "	", mm[ii])
+	}
+}
+
+//todo Activity 5 -----------------------------------------------------------------------------------------------------------------------------------------
+func act5() {
+	length := 0
+	fmt.Println("Enter slice 1 length")
+	fmt.Scanln(&length)
+
+	ss1 := generateSlice(length)
+
+	fmt.Println("Enter slice 2 length")
+	fmt.Scanln(&length)
+
+	ss2 := generateSlice(length)
+
+	fmt.Println("Slice 1: ", ss1)
+	fmt.Println("Slice 2: ", ss2)
+
+	ss1 = sortSlice(ss1, true)
+	ss2 = sortSlice(ss2, false)
+
+	fmt.Println(combineSlices(ss1, ss2, true))
+
+}
+
+func generateSlice(length int) []int {
+	var ss []int
+	for ii := 0; ii < length; ii++ {
+		ss = append(ss, rand.Intn(98)+1) //range does not include 0 and 100
+	}
+	return ss
+}
+
+func sortSlice(in []int, asc bool) []int {
+	if len(in) < 2 {
+		return in
+	}
+	mid := len(in) / 2
+	var LL, RR []int
+	LL = splitArr(in[:mid], asc)
+	RR = splitArr(in[mid:], asc)
+	out := mergeSort(LL, RR, asc)
+	fmt.Println("The sorted slice is:", out)
+	return out
+}
+
+func combineSlices(in1 []int, in2 []int, asc bool) []int {
+	ss := append(in1, in2...)
+	out := sortSlice(ss, asc)
+	return out
+}
+
+//todo Activity 6 -----------------------------------------------------------------------------------------------------------------------------------------
+func act6() {
+	cube := Cube{}
+	cube.length = 10
+
+	box := Box{}
+	box.length = 10
+	box.width = 20
+	box.height = 30
+
+	sphere := Sphere{}
+	sphere.radius = 2
+
+	fmt.Println(cube.volume())
+	fmt.Println(box.volume())
+	fmt.Println(sphere.volume())
+}
+
+type Cube struct {
+	length float64
+}
+
+type Box struct {
+	length float64
+	width  float64
+	height float64
+}
+
+type Sphere struct {
+	radius float64
+}
+
+type shape interface {
+	volume() float64
+}
+
+func (a *Cube) volume() float64 {
+	return a.length * a.length * a.length
+}
+
+func (a *Box) volume() float64 {
+	return a.length * a.width * a.height
+}
+
+func (a *Sphere) volume() float64 {
+	return 3.14 * a.radius * a.radius
+}
 
 //*---------------------- JULY 5 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -501,11 +929,65 @@ func rangeSummary() {
 	}
 }
 
-func Test() { //!--------------------------- TESTING FUNCTION ---------------------------------------
-	// arr := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-	// fmt.Println(getEvens(arr))
-	//july7()
-	//keywordSearch()
-	// sortMap()
-	rangeSummary()
+//*---------------------- JULY 8 -----------------------------------------------------------------------------------------------------------------------------------------
+type AccountOperations interface {
+	// Methods
+	computeInterest() float64
 }
+
+type SavingsAccount struct {
+	number   string
+	balance  float64
+	interest float64
+}
+
+type CheckingAccount struct {
+	number   string
+	balance  float64
+	interest float64
+}
+
+func (a *SavingsAccount) computeInterest() float64 {
+	return 0.005
+}
+
+func (a *CheckingAccount) computeInterest() float64 {
+	return 0.001
+}
+
+func CheckType(i interface{}) {
+	switch i.(type) {
+	case *SavingsAccount:
+		fmt.Println("This is a saving account")
+	case *CheckingAccount:
+		fmt.Println("This is a checking account")
+	default:
+		fmt.Println("Unknown account")
+	}
+}
+
+func testInterface() {
+	a := SavingsAccount{}
+	a.number = "S21345345345355"
+	a.balance = 159
+
+	var ao1 AccountOperations
+	ao1 = &a
+	fmt.Println("Result for ao1")
+	CheckType(ao1)
+
+	b := CheckingAccount{}
+	b.number = "C218678678345345355"
+	b.balance = 2000
+
+	var ao2 AccountOperations
+	ao2 = &b
+	fmt.Println("Result for ao2")
+	CheckType(ao2)
+}
+
+//todo Bank Application
+
+//todo Black Jack
+
+//todo Goblin Tower
