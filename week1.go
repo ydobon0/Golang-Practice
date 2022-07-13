@@ -7,7 +7,7 @@ import "fmt"
 //"unicode"
 
 //Alan Xu
-//keep all practice in a go file will select from them later
+//All assignments and exercises from Week 1 of the Golang training
 type Node struct {
 	Value int
 }

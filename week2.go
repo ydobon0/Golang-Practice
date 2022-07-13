@@ -17,7 +17,10 @@ type doubleZero struct {
 }
 
 func main() {
-	Training.Test()
+	// Training.Test()
+	Training.BankApp()
+	// Training.BlackJack()
+	// Training.GoblinTower()
 
 	// p1 := doubleZero{
 	// 	person: person{
