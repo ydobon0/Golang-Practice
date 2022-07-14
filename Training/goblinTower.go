@@ -48,13 +48,13 @@ func GoblinTower() {
 		steps := 0
 		lvl := 1
 		slain := 0
-		chance := 50
+		chance := 40
 		roll := 0
 		input := ""
 		for player.hp > 0 { //the game
 			steps += 1
 			roll = rand.Intn(100)
-			if roll <= chance { //rolls chance of encountering a goblin. If the roll is lower than the chance, you encounter a goblin
+			if roll <= chance { //rolls chance of encountering a goblin. If the rolled number is lower than the chance, you encounter a goblin
 				gob := generateGoblin()
 				for gob.hp > 0 && player.hp > 0 { //goblin encounter
 					fmt.Println("Your HP = ", player.hp)
@@ -88,7 +88,7 @@ func GoblinTower() {
 							if player.potions[ii] > 0 {
 								fmt.Println("You drink a potion! Recovered HP!")
 
-								player.hp += player.potions[ii]
+								player.hp += player.potions[ii] * 2
 								player.potions[ii] -= 1
 								if player.hp > player.maxHP {
 									player.hp = player.maxHP
