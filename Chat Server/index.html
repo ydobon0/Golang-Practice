@@ -1,0 +1,36 @@
+<html>
+<title>WebSocket Server</title>
+
+<h1>Chat Server</h1>
+<h3>Name:<input id="name" type="text" /></h3>
+<h3>Message: <input id="input" type="text" /></h3>
+
+<button onclick="send()">Send</button>
+<pre id="output"></pre>
+
+<script>
+    var name = document.getElementById("name");
+    var input = document.getElementById("input");
+    var output = document.getElementById("output");
+    var socket = new WebSocket("ws://" + window.location.host + "/echo");
+
+    socket.onopen = function() {
+        output.innerHTML += "Status: Connected\n";
+    };
+
+    socket.onmessage = function(e) {
+        output.innerHTML += "" + e.data + "\n";
+    };
+
+    function send() {
+        var name = document.getElementById("name");
+        socket.send(JSON.stringify({
+            message: input.value,
+            name: name.value
+        }));
+        input.value = "";
+
+    }
+</script>
+
+</html>
