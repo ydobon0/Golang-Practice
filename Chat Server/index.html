@@ -1,17 +1,53 @@
 <html>
 <title>WebSocket Server</title>
+<!-- 
+Client side can be any Java Script base 
+React/Angular/Type Script
 
+React you can consume RestAPI we developed in golang Server
+That's nice ,you can develop an interface for chatting  one one or group
+Write an react app to consume restApi
+
+Consume RestAPI in react.js
+https://pusher.com/tutorials/consume-restful-api-react/#calling-the-api
+
+It required to consume ReatAPI
+From any java script /angular/react / ember/ or any other
+
+Make sure your Rest API if you are fetching structure as json type it structure should maintain all fields must begin with  capital letters
+Tomorrow we will add mongoDB along with REST API
+it help you add more features
+so download and install mongodb
+
+
+i can connect multiple clients to a server, can make new channels, can list channels, joining channels is half-functional (can join a channel, but only regular messages are received, commands are not)
+
+clients are a webpage connected to the server via websockets, and using JSON to send/receive messages
+
+-->
 <h1>Chat Server</h1>
 <h3>Name:<input id="name" type="text" /></h3>
 <h3>Message: <input id="input" type="text" /></h3>
+<h3>
+    <!-- <form action="/action_page.php"> -->
+    <form>
+        <label for="target">To:</label>
+        <!-- <select name="target" id="target" onclick="get()"> -->
+        <select name="target" id="target">
+          <option value="All">All</option>
+        </select>
+    </form>
+</h3>
+<!-- <h3>To: <input id="target" type="text" /></h3> -->
 
 <button onclick="send()">Send</button>
 <pre id="output"></pre>
 
 <script>
-    var name = document.getElementById("name");
     var input = document.getElementById("input");
     var output = document.getElementById("output");
+    var Name = document.getElementById("name");
+    var target = document.getElementById("target");
     var socket = new WebSocket("ws://" + window.location.host + "/echo");
 
     socket.onopen = function() {
@@ -19,17 +55,39 @@
     };
 
     socket.onmessage = function(e) {
-        output.innerHTML += "" + e.data + "\n";
+        const msg = JSON.parse(e.data);
+        if (msg.type == "message") {
+            output.innerHTML += "" + msg.message + "\n";
+        } else {
+            while (target.hasChildNodes()) { // to clean drop box
+                target.removeChild(target.firstChild);
+            }
+            var ary = msg.message.split(",")
+            ary.forEach(addDropDown);
+        }
+        // output.innerHTML += "" + e.data + "\n";
     };
 
     function send() {
-        var name = document.getElementById("name");
-        socket.send(JSON.stringify({
+        const msg = {
             message: input.value,
-            name: name.value
-        }));
-        input.value = "";
+            name: Name.value,
+            target: target.value,
+            type: "message"
+        }
+        socket.send(JSON.stringify(msg));
 
+        input.value = "";
+        Name.setAttribute("readonly", "true");
+    }
+
+    function addDropDown(text) {
+        //output.innerHTML += text + "\n";
+
+        var option = document.createElement("option");
+        option.value = text;
+        option.text = text;
+        target.appendChild(option);
     }
 </script>
 

@@ -1,14 +1,23 @@
 package main
 
+//  http://localhost:8080/
+
+/*
+First Create a Audit Report of the project like flow of application step by step then only you can add more features in Right Place
+*/
+
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
 
-var clients = make(map[*websocket.Conn]bool)
+var counter int = 0
+var clients = make(map[*websocket.Conn]string)
+var usernames = make(map[string]*websocket.Conn)
 var broadcast = make(chan Message)
 
 var upgrader = websocket.Upgrader{}
@@ -16,6 +25,8 @@ var upgrader = websocket.Upgrader{}
 type Message struct {
 	Message string `json:"message"`
 	Name    string `json:"name"`
+	Target  string `json:"target"`
+	Type    string `json:"type"`
 }
 
 // {Part 1 }
@@ -27,18 +38,50 @@ func HandleClients(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("error upgrading GET request to a websocket :: ", err)
 	}
 	defer websocket.Close()
-	clients[websocket] = true
+	clients[websocket] = ""
+
 	for {
 		var message Message
 
 		err := websocket.ReadJSON(&message)
 		if err != nil {
 			log.Printf("error occurred while reading message : %v", err)
+			_, found := usernames[clients[websocket]]
+			if found {
+				delete(usernames, clients[websocket])
+			}
 			delete(clients, websocket)
+			updateList()
 			break
 		}
-		message.Message = time.Now().Format("15:04:05") + " *" + message.Name + "*     " + message.Message
-		broadcast <- message
+
+		if clients[websocket] == "" {
+			message.Name += strconv.Itoa(counter)
+			_, found := usernames[message.Name]
+			for {
+				if !found {
+					usernames[message.Name] = websocket
+					break
+				}
+				message.Name += strconv.Itoa(counter)
+				_, found = usernames[message.Name]
+			}
+			counter += 1
+			clients[websocket] = message.Name
+			updateList()
+		}
+		//fmt.Println(message.Target)
+		message.Name = clients[websocket] //set the sender's name to the correct value
+		if message.Type == "message" {
+			message.Message = time.Now().Format("15:04:05") + " *" + clients[websocket] + "*     " + message.Message
+			broadcast <- message
+		} //else {
+		// 	message.Message = "ALL"
+		// 	for user := range usernames {
+		// 		message.Message += "," + user
+		// 	}
+		// 	websocket.WriteJSON(message)
+		// }
 	}
 }
 
@@ -46,12 +89,21 @@ func HandleClients(w http.ResponseWriter, r *http.Request) {
 func broadcastMessagesToClients() {
 	for {
 		message := <-broadcast
-		for client := range clients {
-			err := client.WriteJSON(message.Message)
-			if err != nil {
-				log.Printf("error occurred while writing message to client: %v", err)
-				client.Close()
-				delete(clients, client)
+
+		if message.Type == "message" {
+			_, found := usernames[message.Target] //check if the target is a valid user
+			if found {                            //if it is send the message only to the target and the sender
+				usernames[message.Target].WriteJSON(message) //.Message
+				usernames[message.Name].WriteJSON(message)   //.Message
+			} else {
+				for client := range clients {
+					err := client.WriteJSON(message) //.Message)
+					if err != nil {
+						log.Printf("error occurred while writing message to client: %v", err)
+						client.Close()
+						delete(clients, client)
+					}
+				}
 			}
 		}
 	}
@@ -72,13 +124,25 @@ func main() {
 	}
 }
 
-//Final Part Over
+func updateList() {
+	var message Message
+	message.Message = "ALL"
+	message.Type = "require"
+	for user := range usernames {
+		message.Message += "," + user
+	}
+	for client := range clients {
+		err := client.WriteJSON(message) //.Message)
+		if err != nil {
+			log.Printf("updateList: error occurred while writing message to client: %v", err)
+			client.Close()
+			delete(clients, client)
+		}
+	}
+	//websocket.WriteJSON(message)
+
+}
+
 /*
-!1. generate unique ID for every client
-
-!2. send message to selected Client any specific client
-
-!3. Users can join multiple channels at the same time, as well as hold 1:1 chats with individual users who may or may not be in a shared channel.
-
-!4. Each username must be unique within the current session.
+Users can run commands using the same interface as a chat, but commands start with /. These commands allow the user to join a channel, leave a channel, start a direct chat with another user, get the current time, or even interact with a channel's bot.
 */
