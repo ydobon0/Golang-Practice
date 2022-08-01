@@ -10,37 +10,24 @@ Write an react app to consume restApi
 
 Consume RestAPI in react.js
 https://pusher.com/tutorials/consume-restful-api-react/#calling-the-api
-
-It required to consume ReatAPI
-From any java script /angular/react / ember/ or any other
-
-Make sure your Rest API if you are fetching structure as json type it structure should maintain all fields must begin with  capital letters
-Tomorrow we will add mongoDB along with REST API
-it help you add more features
-so download and install mongodb
-
-
-i can connect multiple clients to a server, can make new channels, can list channels, joining channels is half-functional (can join a channel, but only regular messages are received, commands are not)
-
-clients are a webpage connected to the server via websockets, and using JSON to send/receive messages
-
 -->
 <h1>Chat Server</h1>
 <h3>Name:<input id="name" type="text" /></h3>
-<h3>Message: <input id="input" type="text" /></h3>
+<h3>Message: <input id="input" type="text" /> <button onclick="send()">Send</button></h3>
 <h3>
-    <!-- <form action="/action_page.php"> -->
-    <form>
-        <label for="target">To:</label>
-        <!-- <select name="target" id="target" onclick="get()"> -->
-        <select name="target" id="target">
-          <option value="All">All</option>
-        </select>
-    </form>
+    <label for="channel">Channel</label>
+    <select name="channel" id="channel">
+        <option value="0">channel 1</option>
+    </select>
+    <button onclick="newChannel()">Create Channel</button>
 </h3>
-<!-- <h3>To: <input id="target" type="text" /></h3> -->
+<h3>
+    <label for="target">To:</label>
+    <select name="target" id="target">
+        <option value="All">All</option>
+    </select>
+</h3>
 
-<button onclick="send()">Send</button>
 <pre id="output"></pre>
 
 <script>
@@ -48,22 +35,32 @@ clients are a webpage connected to the server via websockets, and using JSON to 
     var output = document.getElementById("output");
     var Name = document.getElementById("name");
     var target = document.getElementById("target");
+    var channel = document.getElementById("channel");
+
     var socket = new WebSocket("ws://" + window.location.host + "/echo");
+    var channelCnt = 1;
 
     socket.onopen = function() {
         output.innerHTML += "Status: Connected\n";
+        updateList();
     };
 
     socket.onmessage = function(e) {
         const msg = JSON.parse(e.data);
         if (msg.type == "message") {
             output.innerHTML += "" + msg.message + "\n";
-        } else {
+        } else if (msg.type == "user") {
             while (target.hasChildNodes()) { // to clean drop box
                 target.removeChild(target.firstChild);
             }
             var ary = msg.message.split(",")
-            ary.forEach(addDropDown);
+            ary.forEach(addUser);
+        } else if (msg.type == "channel") {
+            while (channel.hasChildNodes()) { // to clean drop box
+                channel.removeChild(channel.firstChild);
+            }
+            var ary = msg.channel.split(",")
+            ary.forEach(addChannel);
         }
         // output.innerHTML += "" + e.data + "\n";
     };
@@ -73,21 +70,65 @@ clients are a webpage connected to the server via websockets, and using JSON to 
             message: input.value,
             name: Name.value,
             target: target.value,
-            type: "message"
+            type: "message",
+            channel: channel.value
         }
-        socket.send(JSON.stringify(msg));
+        if (Name.value != "" && input.value != "") {
+            socket.send(JSON.stringify(msg));
 
-        input.value = "";
-        Name.setAttribute("readonly", "true");
+            input.value = "";
+            Name.setAttribute("readonly", "true");
+        } else {
+            output.innerHTML += "<span style='color: red; font-size:20px'>Name, Message can not be empty</span>" + "\n";
+        }
     }
 
-    function addDropDown(text) {
+    function addUser(text) {
         //output.innerHTML += text + "\n";
 
         var option = document.createElement("option");
         option.value = text;
         option.text = text;
         target.appendChild(option);
+    }
+
+    function newChannel() {
+        channelCnt++;
+        const msg = {
+            message: input.value,
+            name: Name.value,
+            target: target.value,
+            type: "channel",
+            channel: channel.value
+        }
+        if (Name.value != "") {
+            socket.send(JSON.stringify(msg));
+        } else {
+            output.innerHTML += "<span style='color: red; font-size:20px'>Name can not be empty</span>" + "\n";
+        }
+    }
+
+    function addChannel(text) {
+        var nn = parseInt(text) + 1;
+        var option = document.createElement("option");
+        option.value = text;
+        option.text = "channel " + nn;
+        channel.appendChild(option);
+
+        //output.innerHTML += nn + "\n";
+    }
+
+    function updateList() {
+        channelCnt++;
+        const msg = {
+            message: "",
+            name: "",
+            target: target.value,
+            type: "update",
+            channel: channel.value
+        }
+
+        socket.send(JSON.stringify(msg));
     }
 </script>
 
